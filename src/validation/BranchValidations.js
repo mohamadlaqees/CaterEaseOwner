@@ -6,7 +6,7 @@ const timeStringSchema = z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, {
 export const branchSchema = z.object({
   description: z.string().min(1, "Branch Description is required."),
   manager_id: z.string().min(1, "Please select a Manager."),
-  city_id: z.coerce.number().min(1, "Please select a City."),
+  governorate_id: z.string().min(1, "Please select a Governorate."),
   location_note: z.string().min(1, "loacation Note is required."),
   latitude: z
     .union([
@@ -47,7 +47,10 @@ export const branchSchema = z.object({
 
   delivery_regions: z.array(
     z.object({
-      city_id: z.coerce.number().min(1, "Region name is required."),
+      governorate_id: z.string().min(1, "Governorate name is required."),
+      cityName: z.string().min(1, "Region name is required."),
+      city_id: z.coerce.number(),
+      district_id: z.coerce.number().min(1, "District is required."),
       delivery_price: z.coerce.number().min(1, "Price is required."),
     })
   ),

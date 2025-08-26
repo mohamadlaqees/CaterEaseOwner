@@ -4,26 +4,11 @@ import { useBranchDetailsQuery } from "../store/apiSlice/apiSlice";
 // Import UI Components
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 
 // Icons
-import {
-  ChevronRight,
-  MapPin,
-  User,
-  Phone,
-  Home,
-  Mail,
-  Calendar,
-} from "lucide-react";
+import { ChevronRight, User, Phone, Home, Mail, Calendar } from "lucide-react";
 import BranchDetailsSkeleton from "../components/skeleton/BranchDetailsSkeleton";
+import TableComponent from "../components/TableComponent"; // Ensure this path is correct
 
 // A small helper component for displaying info items
 const InfoItem = ({ icon, label, value }) => (
@@ -37,6 +22,25 @@ const InfoItem = ({ icon, label, value }) => (
     </div>
   </div>
 );
+
+// --- 1. DEFINE ALL TABLE HEADERS ---
+
+const workingHoursHeader = [
+  { name: "Day", key: "day" },
+  { name: "Open Time", key: "open_time" },
+  { name: "Close Time", key: "close_time" },
+];
+
+const servicesHeader = [
+  { name: "Service", key: "serviceName" },
+  { name: "Description", key: "description" },
+  { name: "Price", key: "price", align: "right" }, // Add alignment for consistency
+];
+
+const deliveryAreasHeader = [
+  { name: "Area", key: "areaName" },
+  { name: "Delivery Fee", key: "fee", align: "right" }, // Add alignment
+];
 
 const BranchDetails = () => {
   const { branchID } = useParams();
@@ -54,6 +58,25 @@ const BranchDetails = () => {
 
   const { branch } = data || {};
 
+  // --- 2. MAP ALL TABLE BODY DATA ---
+
+  const workingHoursBody = branch?.working_days?.map((day) => ({
+    day: day.day_of_week,
+    open_time: day.open_time,
+    close_time: day.close_time,
+  }));
+
+  const servicesBody = branch?.branch_service_types?.map((item) => ({
+    serviceName: item.service_type.name,
+    description: item.service_type.description,
+    price: `$${parseFloat(item.custom_price).toFixed(2)}`,
+  }));
+
+  const deliveryAreasBody = branch?.delivery_areas?.map((area) => ({
+    areaName: area.district?.name,
+    fee: `$${parseFloat(area.delivery_price).toFixed(2)}`,
+  }));
+
   // Helper function to format the date
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -68,7 +91,7 @@ const BranchDetails = () => {
     <main className="p-4 sm:p-6 md:p-10 bg-gray-50 min-h-screen">
       <div className="max-w-6xl mx-auto space-y-8">
         {/* --- Header --- */}
-        <header className="flex  justify-between items-center mb-6">
+        <header className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-lg sm:text-3xl font-bold text-(--primaryFont)">
               {branch?.description}
@@ -96,7 +119,7 @@ const BranchDetails = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Left Column */}
               <div className="lg:col-span-2 space-y-8">
-                {/* --- Main Information Card --- */}
+                {/* --- Main Information, Manager Details ... no changes here --- */}
                 <Card className="shadow-sm border">
                   <CardHeader>
                     <CardTitle className="text-lg text-(--primaryFont)">
@@ -124,8 +147,6 @@ const BranchDetails = () => {
                     </div>
                   </CardContent>
                 </Card>
-
-                {/* --- Manager Details Card --- */}
                 <Card className="shadow-sm border">
                   <CardHeader>
                     <CardTitle className="text-lg text-(--primaryFont)">
@@ -159,50 +180,16 @@ const BranchDetails = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead className="text-(--primaryFont)">
-                            Day
-                          </TableHead>
-                          <TableHead className="text-right text-(--primaryFont)">
-                            Hours
-                          </TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {branch?.working_days?.length > 0 ? (
-                          branch?.working_days.map((day) => (
-                            <TableRow key={day.id}>
-                              <TableCell className="font-medium text-(--primaryFont)">
-                                {day.day}
-                              </TableCell>
-                              <TableCell className="text-right text-(--secondaryFont)">
-                                {day.open_time === "Closed"
-                                  ? "Closed"
-                                  : `${day.open_time} - ${day.close_time}`}
-                              </TableCell>
-                            </TableRow>
-                          ))
-                        ) : (
-                          <TableRow>
-                            <TableCell
-                              colSpan={2}
-                              className="text-center text-(--secondaryFont)"
-                            >
-                              Working hours not available.
-                            </TableCell>
-                          </TableRow>
-                        )}
-                      </TableBody>
-                    </Table>
+                    <TableComponent
+                      tableHeader={workingHoursHeader}
+                      tableBody={workingHoursBody}
+                    />
                   </CardContent>
                 </Card>
               </div>
 
-              {/* Right Column */}
+              {/* Right Column ... no changes here --- */}
               <div className="lg:col-span-1 space-y-8">
-                {/* --- Branch Photo Card --- */}
                 <Card className="shadow-sm border">
                   <CardHeader>
                     <CardTitle className="text-lg text-(--primaryFont)">
@@ -225,8 +212,6 @@ const BranchDetails = () => {
                     )}
                   </CardContent>
                 </Card>
-
-                {/* --- Categories Card --- */}
                 <Card className="shadow-sm border">
                   <CardHeader>
                     <CardTitle className="text-lg text-(--primaryFont)">
@@ -256,7 +241,7 @@ const BranchDetails = () => {
 
             {/* Full-width tables at the bottom */}
             <div className="space-y-8">
-              {/* --- Services Table --- */}
+              {/* --- 3. REPLACE THE SERVICES TABLE --- */}
               <Card className="shadow-sm border">
                 <CardHeader>
                   <CardTitle className="text-lg text-(--primaryFont)">
@@ -264,51 +249,15 @@ const BranchDetails = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="text-(--primaryFont)">
-                          Service
-                        </TableHead>
-                        <TableHead className="text-(--primaryFont)">
-                          Description
-                        </TableHead>
-                        <TableHead className="text-right text-(--primaryFont)">
-                          Price
-                        </TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {branch?.branch_service_types?.length > 0 ? (
-                        branch?.branch_service_types.map((item) => (
-                          <TableRow key={item.id}>
-                            <TableCell className="font-medium text-(--primaryFont)">
-                              {item.service_type.name}
-                            </TableCell>
-                            <TableCell className="text-(--secondaryFont)">
-                              {item.service_type.description}
-                            </TableCell>
-                            <TableCell className="text-right text-(--primaryFont)">
-                              ${parseFloat(item.custom_price).toFixed(2)}
-                            </TableCell>
-                          </TableRow>
-                        ))
-                      ) : (
-                        <TableRow>
-                          <TableCell
-                            colSpan={3}
-                            className="text-center text-(--secondaryFont)"
-                          >
-                            No services available for this branch.
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
+                  <TableComponent
+                    tableHeader={servicesHeader}
+                    tableBody={servicesBody}
+                    emptyMessage="No services available for this branch."
+                  />
                 </CardContent>
               </Card>
 
-              {/* --- Delivery Areas Table --- */}
+              {/* --- 4. REPLACE THE DELIVERY AREAS TABLE --- */}
               <Card className="shadow-sm border">
                 <CardHeader>
                   <CardTitle className="text-lg text-(--primaryFont)">
@@ -316,41 +265,11 @@ const BranchDetails = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="text-(--primaryFont)">
-                          Area
-                        </TableHead>
-                        <TableHead className="text-right text-(--primaryFont)">
-                          Delivery Fee
-                        </TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {branch?.delivery_areas?.length > 0 ? (
-                        branch?.delivery_areas.map((area) => (
-                          <TableRow key={area.id}>
-                            <TableCell className="font-medium text-(--primaryFont)">
-                              {area.city.name}
-                            </TableCell>
-                            <TableCell className="text-right text-(--primaryFont)">
-                              ${parseFloat(area.delivery_price).toFixed(2)}
-                            </TableCell>
-                          </TableRow>
-                        ))
-                      ) : (
-                        <TableRow>
-                          <TableCell
-                            colSpan={2}
-                            className="text-center text-(--secondaryFont)"
-                          >
-                            No delivery areas defined.
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
+                  <TableComponent
+                    tableHeader={deliveryAreasHeader}
+                    tableBody={deliveryAreasBody}
+                    emptyMessage="No delivery areas defined."
+                  />
                 </CardContent>
               </Card>
             </div>

@@ -242,7 +242,7 @@ function Dashboard() {
               <SelectTrigger className="w-full md:w-[220px] text-(--secondaryFont)">
                 <SelectValue placeholder="Select Branch" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="text-(--secondaryFont)">
                 <SelectItem value="all">All Branches</SelectItem>
                 {branchesNames?.map((branch) => (
                   <SelectItem key={branch.id} value={branch.id}>

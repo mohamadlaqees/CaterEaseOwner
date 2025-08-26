@@ -58,7 +58,7 @@ const AddManager = () => {
   return (
     <>
       <Toaster position="top-center" richColors />
-      <main className="p-4 sm:p-6 lg:p-8 bg-gray-50/50 min-h-screen flex items-center justify-center">
+      <main className="sm:p-6 lg:p-8 bg-gray-50/50 min-h-screen flex items-center justify-center">
         <div className="max-w-3xl w-full mx-auto">
           <Form {...form}>
             <form
@@ -86,12 +86,12 @@ const AddManager = () => {
                       <FormItem>
                         <FormLabel>Full Name</FormLabel>
                         <div className="relative">
-                          <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                          <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-(--primaryFont)" />
                           <FormControl>
                             <Input
                               placeholder="e.g., Jane Smith"
                               {...field}
-                              className="pl-10"
+                              className="pl-10 focus-visible:ring-(--primary) focus:border-0  placeholder-(--secondaryFont) text-(--secondaryFont)"
                             />
                           </FormControl>
                         </div>
@@ -108,13 +108,13 @@ const AddManager = () => {
                       <FormItem>
                         <FormLabel>Email Address</FormLabel>
                         <div className="relative">
-                          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-(--primaryFont)" />
                           <FormControl>
                             <Input
                               type="email"
                               placeholder="e.g., jane.smith@example.com"
                               {...field}
-                              className="pl-10"
+                              className="pl-10 focus-visible:ring-(--primary) focus:border-0  placeholder-(--secondaryFont) text-(--secondaryFont)"
                             />
                           </FormControl>
                         </div>
@@ -131,13 +131,13 @@ const AddManager = () => {
                       <FormItem>
                         <FormLabel>Phone Number</FormLabel>
                         <div className="relative">
-                          <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                          <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-(--primaryFont)" />
                           <FormControl>
                             <Input
                               type="number"
                               placeholder="e.g., 599123456"
                               {...field}
-                              className="pl-10"
+                              className="pl-10 focus-visible:ring-(--primary) focus:border-0  placeholder-(--secondaryFont) text-(--secondaryFont)"
                             />
                           </FormControl>
                         </div>
@@ -191,13 +191,13 @@ const AddManager = () => {
                         <FormItem>
                           <FormLabel>Password</FormLabel>
                           <div className="relative">
-                            <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                            <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-(--primaryFont)" />
                             <FormControl>
                               <Input
                                 type="password"
                                 placeholder="Must be at least 8 characters"
                                 {...field}
-                                className="pl-10"
+                                className="pl-10 focus-visible:ring-(--primary) focus:border-0  placeholder-(--secondaryFont) text-(--secondaryFont)"
                               />
                             </FormControl>
                           </div>
@@ -212,13 +212,14 @@ const AddManager = () => {
               {/* Form Footer */}
               <div className="flex items-center justify-end gap-4 p-6 bg-gray-50/50 border-t border-gray-200 rounded-b-xl">
                 <Button
-                  className={"cursor-pointer"}
                   type="button"
-                  variant="ghost"
-                  onClick={() => navigate("/managers")}
-                  disabled={isLoading}
+                  variant="outline"
+                  onClick={() => {
+                    form.reset();
+                  }}
+                  className="text-(--secondaryFont) hover:text-(--primary) cursor-pointer "
                 >
-                  Cancel
+                  Clear Form
                 </Button>
                 <LoadingButton
                   btnClass={"cursor-pointer"}

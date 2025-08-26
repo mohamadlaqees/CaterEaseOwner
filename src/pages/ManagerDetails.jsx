@@ -106,8 +106,7 @@ const ManagerDetails = () => {
 
   const profileImage =
     manager.photo === "default.jpg" ? "/person.png" : manager.photo;
-  const branchImage =
-    branch.photo?.replace(/\\\//g, "/") || "/default-branch.png";
+  const branchImage = branch.photo;
 
   // --- UI Rendering ---
   if (managerDetailsIsLoading) {
@@ -130,8 +129,8 @@ const ManagerDetails = () => {
       <main className="bg-gray-50 min-h-screen p-4 sm:p-6 lg:p-8 ">
         <div className="max-w-7xl mx-auto">
           {/* --- Header & Breadcrumbs --- */}
-          <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-20">
-            <h1 className="text-2xl sm:text-3xl font-bold text-(--primaryFont)">
+          <header className="flex  items-start sm:items-center justify-between mb-20">
+            <h1 className="text-sm sm:text-3xl font-bold text-(--primaryFont)">
               {isEditPage ? "Edit Manager" : "Manager Details"}
             </h1>
             <div className="flex text-(--primaryFont) items-center gap-2 text-sm sm:text-base font-medium">

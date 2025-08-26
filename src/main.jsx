@@ -19,7 +19,7 @@ import Managers from "./pages/Managers.jsx";
 import AddManager from "./pages/AddManager.jsx";
 import ManagerDetails from "./pages/ManagerDetails.jsx";
 import EditManager from "./pages/EditManager.jsx";
-import Reviews from "./pages/Reviews.jsx";
+import ReportsPage from "./pages/Reports.jsx";
 
 const routes = createBrowserRouter([
   {
@@ -103,8 +103,8 @@ const routes = createBrowserRouter([
         ],
       },
       {
-        path: "reviews",
-        element: <Reviews />,
+        path: "reports",
+        element: <ReportsPage />,
       },
     ],
   },

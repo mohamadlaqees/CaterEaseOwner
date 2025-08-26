@@ -39,9 +39,8 @@ const ConfirmPopUp = ({
         <div className="flex justify-center gap-4 mt-8">
           <Button
             type="button"
-            variant="secondary"
-            className="w-full sm:w-auto text-(--primary) h-10 text-sm cursor-pointer transition-all"
-            onClick={onCancel}
+            variant="outline"
+            className="text-(--secondaryFont) hover:text-(--primary) cursor-pointer "
           >
             Cancel
           </Button>

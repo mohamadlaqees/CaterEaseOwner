@@ -5,7 +5,7 @@ import { FormControl, FormItem, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-const EditableTag = ({ field, title }) => {
+const EditableTag = ({ field, title, inputClass }) => {
   const [inputValue, setInputValue] = useState("");
 
   const handleAddTag = () => {
@@ -32,7 +32,6 @@ const EditableTag = ({ field, title }) => {
       <CardContent>
         <FormItem>
           <div className="flex flex-wrap gap-2 mb-4">
-            {/* We now map over field.value, which is the string array */}
             {field.value.map((tag, index) => (
               <div
                 key={`${tag}-${index}`} // Create a stable key
@@ -56,7 +55,7 @@ const EditableTag = ({ field, title }) => {
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder={`Add a new ${title.toLowerCase().slice(0, -1)}...`}
-                className="text-(--secondaryFont)"
+                className={inputClass}
               />
             </FormControl>
             <Button

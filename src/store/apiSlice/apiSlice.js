@@ -127,6 +127,9 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ["branches"],
     }),
+    getDeliveryRegions: build.query({
+      query: (stateName) => `owner/locations/search??search=${stateName}`,
+    }),
 
     // menu
     categories: build.query({
@@ -214,192 +217,18 @@ export const apiSlice = createApi({
       query: (date) => `users/all/Manager??date=${date}`,
     }),
 
-    //reports
     reports: build.query({
-      query: () => "api/report",
+      query: () => `owner/report`,
     }),
-
-    // packagesWithDiscount: build.query({
-    //   query: () => `package-discounts/management`,
-    //   providesTags: ["discount"],
-    // }),
-    // popularThisWeek: build.query({
-    //   query: (branchID) => `orders/Popular-food-week/${branchID}`,
-    // }),
-    // bestSeller: build.query({
-    //   query: (branchID) => `orders/best-sell/${branchID}`,
-    // }),
-    // promo: build.query({
-    //   query: () => `descount/manage/all`,
-    // }),
-    // addpackage: build.mutation({
-    //   query: (packageInfo) => ({
-    //     url: `packagesmangement`,
-    //     method: "POST",
-    //     body: {
-    //       ...packageInfo,
-    //     },
-    //   }),
-    // }),
-    // deletepackage: build.mutation({
-    //   query: (packageID) => ({
-    //     url: `packagesmangement/${packageID}`,
-    //     method: "DELETE",
-    //   }),
-    //   invalidatesTags: ["category"],
-    // }),
-    // getPackage: build.query({
-    //   query: (pacakgeID) => `packagesmangement/${pacakgeID}`,
-    //   providesTags: ["updatePackage"],
-    // }),
-    // updatepackage: build.mutation({
-    //   query: (updatedPackage) => ({
-    //     url: `packagesmangement/${updatedPackage.id}`,
-    //     method: "PUT",
-    //     body: {
-    //       ...updatedPackage,
-    //     },
-    //   }),
-    //   invalidatesTags: ["updatePackage"],
-    // }),
-    // getOccasion: build.query({
-    //   query: () => "occasion-types",
-    // }),
-    // addDiscount: build.mutation({
-    //   query: (discount) => ({
-    //     url: "package-discounts/management",
-    //     method: "POST",
-    //     body: {
-    //       ...discount,
-    //     },
-    //   }),
-    //   invalidatesTags: ["discount", "updatePackage", "category"],
-    // }),
-    // deleteDiscount: build.mutation({
-    //   query: (discountID) => ({
-    //     url: `package-discounts/${discountID}/management`,
-    //     method: "DELETE",
-    //   }),
-    //   invalidatesTags: ["discount", "updatePackage", "category"],
-    // }),
-    // branchServices: build.query({
-    //   query: () => `service-types`,
-    // }),
-
-    // // Customers
-    // customers: build.query({
-    //   query: ({ branchID, search, date, status }) => {
-    //     const params = new URLSearchParams();
-    //     if (search) params.append("name", search);
-    //     if (date) params.append("date", date);
-    //     if (status) params.append("status", status);
-
-    //     return `${
-    //       (search === undefined &&
-    //         date === undefined &&
-    //         status === undefined) ||
-    //       status === "all"
-    //         ? `all_customer/${branchID}`
-    //         : `branches/${branchID}/customers/${
-    //             search ? "search" : date ? "verified" : status ? "status" : ""
-    //           }?${params.toString()}`
-    //     }`;
-    //   },
-    // }),
-    // customerDetails: build.query({
-    //   query: (customerID) => `branches/${customerID}/customer`,
-    // }),
-    // customerOrders: build.query({
-    //   query: ({ customerID, orderStatus }) => {
-    //     return `manager/customers/${customerID}/orders/${orderStatus}`;
-    //   },
-    // }),
-    // coupon: build.mutation({
-    //   query: (coupon) => ({
-    //     url: "coupons/create",
-    //     method: "POST",
-    //     body: {
-    //       ...coupon,
-    //     },
-    //   }),
-    // }),
-
-    // // Delivery
-    // delivery: build.query({
-    //   query: ({ search, date, status }) => {
-    //     const params = new URLSearchParams();
-    //     if (search) params.append("name", search);
-    //     if (date) params.append("date", date);
-    //     if (status) params.append("status", status);
-
-    //     return `${
-    //       search === undefined &&
-    //       date === undefined &&
-    //       (status === undefined || status === "all")
-    //         ? `delivery-people/manage`
-    //         : `delivery/manage?${params.toString()}`
-    //     }`;
-    //   },
-    //   providesTags: ["Delivery"],
-    // }),
-    // addDeliveryEmployee: build.mutation({
-    //   query: (DEInfo) => ({
-    //     url: "delivery-people/manage",
-    //     method: "POST",
-    //     body: {
-    //       ...DEInfo,
-    //     },
-    //   }),
-    //   invalidatesTags: ["Delivery"],
-    // }),
-    // deliveryDetails: build.query({
-    //   query: (deliveryID) => ({
-    //     url: `delivery-people/manage/${deliveryID}`,
-    //   }),
-    //   providesTags: ["updateDelivery"],
-    // }),
-    // deleteDeliveryEmployee: build.mutation({
-    //   query: (deliveryID) => ({
-    //     url: `delivery-people/manage/${deliveryID}`,
-    //     method: "DELETE",
-    //   }),
-    //   invalidatesTags: ["Delivery"],
-    // }),
-    // deliveryOrders: build.query({
-    //   query: (deliveryID) => `manager/delivery-person/${deliveryID}/orders`,
-    // }),
-    // editDeliveryEmployee: build.mutation({
-    //   query: ({ deliveryEmployee, payload }) => ({
-    //     url: `delivery-people/manage/${deliveryEmployee}`,
-    //     method: "PUT",
-    //     body: {
-    //       ...payload,
-    //     },
-    //   }),
-    //   invalidatesTags: ["updateDelivery"],
-    // }),
-    // orderHistory: build.query({
-    //   query: () => `order/manange/allorder`,
-    // }),
-    // orderStatusSearch: build.query({
-    //   query: (status) => `order/manange/${status}`,
-    // }),
-
-    // //Report
-    // report: build.mutation({
-    //   query: (report) => ({
-    //     url: "/report",
-    //     method: "POST",
-    //     body: {
-    //       ...report,
-    //     },
-    //   }),
-    // }),
-
-    // //reviews
-    // reviews: build.query({
-    //   query: () => "reviews/manage",
-    // }),
+    changeReportsStatus: build.mutation({
+      query: ({ reviewID, status }) => ({
+        url: `owner/report/update/${reviewID}`,
+        method: "POST",
+        body: {
+          status,
+        },
+      }),
+    }),
   }),
 });
 
@@ -433,6 +262,8 @@ export const {
   useSearchManagerByDateQuery,
   useDeleteBranchMutation,
   useReportsQuery,
+  useChangeReportsStatusMutation,
+  useGetDeliveryRegionsQuery,
   // useCustomersQuery,
   // useReportMutation,
   // usePopularThisWeekQuery,

@@ -25,9 +25,10 @@ import LoadingButton from "../components/LoadingButton";
 import { branchSchema } from "../validation/BranchValidations";
 
 import { ChevronRight, MapPin } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   useAddBranchMutation,
+  useGetDeliveryRegionsQuery,
   useManagersQuery,
 } from "../store/apiSlice/apiSlice";
 import { toast, Toaster } from "sonner";
@@ -43,23 +44,37 @@ const weekDays = [
   "Saturday",
   "Sunday",
 ];
-
-const cities = [
-  { value: 1, label: "New York" },
-  { value: 2, label: "London" },
-  { value: 3, label: "Tokyo" },
-  { value: 4, label: "Sydney" },
-  { value: 5, label: "Paris" },
+const governorate = [
+  { id: 1, name: "Damascus" },
+  { id: 2, name: "Rural Damascus" },
+  { id: 3, name: "Tartus" },
+  { id: 4, name: "Aleppo" },
+  { id: 5, name: "Hama" },
+  { id: 6, name: "Homs" },
+  { id: 7, name: "Latakia" },
+  { id: 8, name: "Raqqa" },
+  { id: 9, name: "Deir ez-Zor" },
+  { id: 10, name: "Al-Hasakah" },
+  { id: 11, name: "Daraa" },
+  { id: 12, name: "Al-Suwayda" },
+  { id: 13, name: "Idlib" },
+  { id: 14, name: "Quneitra" },
 ];
 
 const AddBranch = () => {
   const navigate = useNavigate();
-  const [addBranch, { isLoading }] = useAddBranchMutation();
-  const { data: managersResponse, isLoading: ManagersIsloading } =
-    useManagersQuery();
   const [locationStatus, setLocationStatus] = useState({
     loading: false,
     error: null,
+  });
+  const [governorateName, setGovernorateName] = useState(undefined);
+  const [addBranch, { isLoading }] = useAddBranchMutation();
+  const { data: managersResponse } = useManagersQuery();
+  const {
+    data: deliveryRegionsResponse,
+    isFetching: deliveryRegionsIsloading,
+  } = useGetDeliveryRegionsQuery(governorateName, {
+    skip: !governorateName,
   });
 
   const managers = managersResponse?.allManager?.map((manager) => {
@@ -74,10 +89,10 @@ const AddBranch = () => {
     defaultValues: {
       description: "",
       location_note: "",
-      city_id: undefined,
+      governorate_id: "",
       latitude: "",
       longitude: "",
-      managerName: "",
+      manager_id: "",
       categories: [],
       services: [],
       working_hours: [],
@@ -129,19 +144,28 @@ const AddBranch = () => {
     );
   };
 
+  const governorateIdMap = new Map(governorate.map((g) => [g.name, g.id]));
+  const selectedGovernorateId = governorateIdMap.get(governorateName);
   const onSubmit = async (data) => {
-    console.log("Submitting new branch data:", data);
     try {
-      const response = await addBranch(data).unwrap();
+      const response = await addBranch({
+        ...data,
+        city_id: selectedGovernorateId,
+        delivery_regions: form.getValues("delivery_regions").map((d) => ({
+          city_id: d.city_id,
+          district_id: d.district_id,
+          delivery_price: +d.delivery_price,
+        })),
+      }).unwrap();
       form.reset();
-      navigate("/branches");
-      toast.success(response.data.message, {
+      toast.success(response.message, {
         style: {
           background: "white",
-          color: "#ef4444",
+          color: "#314E76",
           border: "1px solid hsl(var(--border))",
         },
       });
+      navigate("/branches");
     } catch (error) {
       toast.error(error.data.message, {
         style: {
@@ -153,10 +177,31 @@ const AddBranch = () => {
     }
   };
 
+  useEffect(() => {
+    if (
+      deliveryRegionsResponse?.results[0] &&
+      Array.isArray(deliveryRegionsResponse.results[0].districts)
+    ) {
+      const deliveryRegions = deliveryRegionsResponse?.results[0].districts.map(
+        (d) => ({
+          governorate_id: governorateName,
+          cityName: d.name,
+          city_id: d.city_id,
+          district_id: d.id,
+          delivery_price: 0,
+        })
+      );
+      form.setValue("delivery_regions", deliveryRegions, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+    }
+  }, [deliveryRegionsResponse, governorateName, form.setValue]);
+
   return (
     <>
       <Toaster position="top-center" richColors />
-      <main className="p-4 sm:p-6 md:p-10 bg-gray-50 min-h-screen">
+      <main className="p-4 sm:p-6 md:p-10 bg-gray-50 ">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit, (errors) => {
@@ -201,7 +246,7 @@ const AddBranch = () => {
                         <Input
                           {...field}
                           placeholder="e.g., Downtown Central"
-                          className="text-(--secondaryFont)"
+                          className=" focus-visible:ring-(--primary) focus:border-0  placeholder-(--secondaryFont) text-(--secondaryFont)"
                         />
                       </FormControl>
                       <FormMessage />
@@ -220,7 +265,7 @@ const AddBranch = () => {
                         <Textarea
                           {...field}
                           placeholder="e.g., Near the main square, second floor"
-                          className="text-(--secondaryFont)"
+                          className=" focus-visible:ring-(--primary) focus:border-0  placeholder-(--secondaryFont) text-(--secondaryFont)"
                         />
                       </FormControl>
                       <FormMessage />
@@ -231,7 +276,7 @@ const AddBranch = () => {
                 <div className="grid md:grid-cols-2 gap-6">
                   <FormField
                     control={form.control}
-                    name="managerName"
+                    name="manager_id"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-(--primaryFont) font-medium">
@@ -242,11 +287,11 @@ const AddBranch = () => {
                           defaultValue={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger className="text-(--secondaryFont) w-full">
-                              <SelectValue placeholder="Select a manager" />
+                            <SelectTrigger className="text-(--secondaryFont)  w-full">
+                              <SelectValue placeholder="Select a manager " />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent>
+                          <SelectContent className="text-(--secondaryFont)">
                             {managers?.map((manager) => (
                               <SelectItem
                                 key={manager.value}
@@ -272,7 +317,7 @@ const AddBranch = () => {
                       type="button"
                       variant="outline"
                       size="sm"
-                      className="cursor-pointer"
+                      className="cursor-pointer hover:text-(--primary)"
                       onClick={handleFetchLocation}
                       disabled={locationStatus.loading}
                     >
@@ -296,7 +341,7 @@ const AddBranch = () => {
                               type="number"
                               {...field}
                               placeholder="e.g., 35.684"
-                              className="text-(--secondaryFont)"
+                              className=" focus-visible:ring-(--primary) focus:border-0  placeholder-(--secondaryFont) text-(--secondaryFont)"
                             />
                           </FormControl>
                           <FormMessage />
@@ -316,7 +361,7 @@ const AddBranch = () => {
                               type="number"
                               {...field}
                               placeholder="e.g., 36.712"
-                              className="text-(--secondaryFont)"
+                              className=" focus-visible:ring-(--primary) focus:border-0  placeholder-(--secondaryFont) text-(--secondaryFont)"
                             />
                           </FormControl>
                           <FormMessage />
@@ -330,7 +375,7 @@ const AddBranch = () => {
             </Card>
 
             {/* --- City Selection Card --- */}
-            <Card className="shadow-sm border">
+            {/* <Card className="shadow-sm border">
               <CardHeader>
                 <CardTitle className="text-lg text-(--primaryFont)">
                   City
@@ -355,7 +400,7 @@ const AddBranch = () => {
                             <SelectValue placeholder="Select a City" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
+                        <SelectContent className="text-(--secondaryFont)">
                           {cities.map((city) => (
                             <SelectItem key={city.value} value={city.value}>
                               {city.label}
@@ -368,18 +413,29 @@ const AddBranch = () => {
                   )}
                 />
               </CardContent>
-            </Card>
+            </Card> */}
 
             <FormField
               control={form.control}
               name="categories"
               render={({ field }) => (
-                <EditableTag field={field} title="Categories" />
+                <EditableTag
+                  field={field}
+                  title="Categories"
+                  inputClass={
+                    " focus-visible:ring-(--primary) focus:border-0  placeholder-(--secondaryFont) text-(--secondaryFont)"
+                  }
+                />
               )}
             />
 
             {/* --- Services Table --- */}
             <EditableTable
+              loading={false}
+              btnClass={"hover:text-(--primary) cursor-pointer"}
+              inputClass={
+                " focus-visible:ring-(--primary) focus:border-0  placeholder-(--secondaryFont) text-(--secondaryFont)"
+              }
               control={form.control}
               name="services"
               title="Services"
@@ -392,6 +448,11 @@ const AddBranch = () => {
             />
             {/* --- Editable Tables --- */}
             <EditableTable
+              loading={false}
+              btnClass={"hover:text-(--primary) cursor-pointer"}
+              inputClass={
+                " focus-visible:ring-(--primary) focus:border-0  placeholder-(--secondaryFont) text-(--secondaryFont)"
+              }
               control={form.control}
               extraData={weekDays}
               name="working_hours"
@@ -403,32 +464,78 @@ const AddBranch = () => {
               ]}
               newRowObject={{ day: "", open_time: "", close_time: "" }}
             />
+            <div className="grid md:grid-cols-2 gap-6">
+              <FormField
+                control={form.control}
+                name="governorate_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-(--primaryFont) font-medium">
+                      Governorate Name
+                    </FormLabel>
+                    <Select
+                      onValueChange={(selectedValue) => {
+                        field.onChange(selectedValue);
+                        setGovernorateName(selectedValue);
+                        form.setValue("delivery_regions", []);
+                      }}
+                      value={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="text-(--secondaryFont)  w-full">
+                          <SelectValue placeholder="Select a Governorate " />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="text-(--secondaryFont)">
+                        {governorate?.map((gov) => (
+                          <SelectItem key={gov.id} value={gov.name}>
+                            {gov.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             <EditableTable
+              loading={deliveryRegionsIsloading}
+              btnClass={"hover:text-(--primary) cursor-pointer"}
+              inputClass={
+                " focus-visible:ring-(--primary) focus:border-0  placeholder-(--secondaryFont) text-(--secondaryFont)"
+              }
               control={form.control}
               name="delivery_regions"
               title="Delivery Regions"
               columns={[
-                { header: "Region Name", key: "city_id", type: "string" },
+                {
+                  header: "Governorate Name",
+                  key: "governorate_id",
+                  type: "string",
+                },
+                { header: "Region Name", key: "cityName", type: "string" },
                 { header: "Price", key: "delivery_price", type: "number" },
               ]}
-              newRowObject={{ name: "", price: 0 }}
             />
 
             {/* --- Form Actions --- */}
             <div className="flex justify-end gap-4 pt-6 border-t">
               <Button
                 type="button"
-                variant="ghost"
-                onClick={() => form.reset()}
-                className="text-(--secondaryFont) hover:bg-gray-100 cursor-pointer"
+                variant="outline"
+                onClick={() => {
+                  form.reset();
+                }}
+                className="text-(--secondaryFont) hover:text-(--primary) cursor-pointer "
               >
-                Clear Form
+                Cancel
               </Button>
               <LoadingButton
                 btnClass={"cursor-pointer"}
                 isButton={true}
                 type="submit"
-                isLoading={isLoading}
+                disabled={isLoading}
                 loadingText="Creating..."
                 text="Create Branch"
               />

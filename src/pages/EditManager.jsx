@@ -222,11 +222,12 @@ const EditManager = () => {
             {/* Form Footer */}
             <div className="flex items-center justify-end gap-4 p-6 bg-gray-50/50 border-t border-gray-200 rounded-b-xl">
               <Button
-                className={"cursor-pointer"}
                 type="button"
-                variant="ghost"
-                onClick={() => form.reset()}
-                disabled={isUpdating}
+                variant="outline"
+                onClick={() => {
+                  navigate("/managers");
+                }}
+                className="text-(--secondaryFont) hover:text-(--primary) cursor-pointer "
               >
                 Cancel
               </Button>

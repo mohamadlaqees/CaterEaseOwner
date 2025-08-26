@@ -124,7 +124,7 @@ const Managers = () => {
   };
   return (
     <>
-      <main className=" text-(--primaryFont) p-10 ">
+      <main className=" text-(--primaryFont) p-5 ">
         <header className="flex items-center justify-between   font-bold mb-5">
           <span className="text-sm text-center sm:text-2xl ">
             {condition ? " Add Manager" : "Managers List"}
@@ -144,7 +144,7 @@ const Managers = () => {
             <NavLink
               to={"add-manager"}
               className={({ isActive }) =>
-                `transition-all ${
+                `transition-all  hover:text-(--primary) ${
                   isActive ? "text-(--primary)" : "text-(--primaryFont)"
                 }`
               }

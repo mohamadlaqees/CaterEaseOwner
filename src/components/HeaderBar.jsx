@@ -22,7 +22,9 @@ const HeaderBar = ({ sidebarRef }) => {
 
   const restaurantInfo = {
     name: branchInfo?.basic_info?.name,
-    photo: branchInfo?.branches?.[0].branch_info.photo?.replace(/\\\//g, "/"),
+    photo:
+      branchInfo?.branches?.[0]?.branch_info.photo?.replace(/\\\//g, "/") ||
+      "/owner.webp",
   };
 
   const { name: restaurantName, photo: restaurantPhoto } = restaurantInfo;

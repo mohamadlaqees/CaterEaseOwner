@@ -5,6 +5,7 @@ import dashboardSlice from "./dashboardSlice";
 import restaurantSlice from "./restaurantSlice";
 import packageSlice from "./packageSlice";
 import managerSlice from "./managerSlice";
+import reportSlice from "./reportSlice";
 import { apiSlice } from "./apiSlice/apiSlice";
 import { setupListeners } from "@reduxjs/toolkit/query";
 
@@ -16,6 +17,7 @@ const store = configureStore({
     restaurant: restaurantSlice,
     package: packageSlice,
     manager: managerSlice,
+    report: reportSlice,
     [apiSlice.reducerPath]: apiSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>

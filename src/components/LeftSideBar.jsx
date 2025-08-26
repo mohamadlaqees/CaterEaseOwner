@@ -123,25 +123,10 @@ const LeftSideBar = ({ sidebarRef }) => {
                   : "text-(--primaryFont)"
               } `
             }
-            to={"./reviews"}
+            to={"./reports"}
           >
             <Inbox />
-            Reviews
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            className={({ isActive }) =>
-              ` transition-all flex gap-4.5 p-3 rounded-md ${
-                isActive
-                  ? "bg-(--primary) text-white shadow-sm"
-                  : "text-(--primaryFont)"
-              } `
-            }
-            to={"./sendReports"}
-          >
-            <Flag />
-            Send Reports
+            Reports
           </NavLink>
         </li>
       </ul>
