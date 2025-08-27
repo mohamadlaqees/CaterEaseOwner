@@ -58,10 +58,6 @@ const performanceChartConfig = {
     label: "Orders",
     color: "hsl(var(--secondary))",
   },
-  avgRating: {
-    label: "Avg. Rating",
-    color: "hsl(var(--destructive))",
-  },
 };
 
 const CustomTooltip = ({ active, payload, label }) => {
@@ -131,7 +127,6 @@ function Dashboard() {
     branch: branchStatisticsInfo.name,
     revenue: branchStatisticsInfo.totalRevenue,
     orders: branchStatisticsInfo.totalOrders,
-    avgRating: branchStatisticsInfo.avreageRating,
   };
 
   const transformedMonthlyRevenueData = {};
@@ -140,24 +135,22 @@ function Dashboard() {
       transformedMonthlyRevenueData[month] = { month: month };
     }
     transformedMonthlyRevenueData[month][branchStatisticsInfo.name] =
-      branchStatisticsInfo.monthlyStatus[month];
+      branchStatisticsInfo.monthlyStatus[month]?.revenue;
   }
-  Object.values(transformedMonthlyRevenueData);
+
+  const chartDataForBranche = transformedMonthlyRevenueData
+    ? Object.values(transformedMonthlyRevenueData)
+    : [];
 
   const transformedTopSellingItemsData =
     branchStatisticsInfo.packagesStatus?.map((item, inx) => {
       return {
-        items: {
-          id: inx + 1,
-          name: item.name,
-          orders: item.total_orders,
-          revenue: item.total_revenue,
-        },
+        id: inx + 1,
+        name: item.package_name,
+        orders: item.total_orders,
+        revenue: item.total_revenue,
       };
     });
-  const transformedallItems = transformedTopSellingItemsData?.flatMap(
-    (branch) => branch.items
-  );
 
   const branchesNames = branchesResponse?.branches.map((branch) => {
     return {
@@ -180,10 +173,8 @@ function Dashboard() {
       branch: branch.branch_name,
       revenue: branch.total_revenue,
       orders: branch.total_orders,
-      avgRating: branch.average_rating,
     };
   });
-
   const monthlyRevenuConfig = {};
 
   const monthlyRevenueData = {};
@@ -205,24 +196,29 @@ function Dashboard() {
       }
       monthlyRevenueData[month][branchName] = revenues[month];
     }
-
-    return Object.values(monthlyRevenueData);
   });
+
+  const chartDataForAllBranches = monthlyRevenueData
+    ? Object.values(monthlyRevenueData)
+    : [];
 
   const topSellingItemsData = totalSellingItems?.statistics.map((item) => {
-    return {
-      items: item.package_stats.map((pkg, inx) => {
-        return {
-          id: inx + 1,
-          name: pkg.name,
-          orders: pkg.total_orders,
-          revenue: pkg.total_revenue,
-        };
-      }),
-    };
+    const packagesInfo = item.package_stats.map((pkg, inx) => {
+      return {
+        id: inx + 1,
+        name: pkg.name,
+        orders: pkg.total_orders,
+        revenue: pkg.total_revenue,
+      };
+    });
+
+    return packagesInfo;
   });
 
-  const allItems = topSellingItemsData?.flatMap((branch) => branch.items);
+  const allItems =
+    selectedValue === "all"
+      ? topSellingItemsData?.flatMap((branch) => branch)
+      : transformedTopSellingItemsData;
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
@@ -338,7 +334,7 @@ function Dashboard() {
                     <BarChart
                       data={
                         selectedValue === "all"
-                          ? [branchPerformanceData]
+                          ? branchPerformanceData
                           : [transformedBranchPerformanceData]
                       }
                       margin={{ top: 5, right: 5, left: 0, bottom: 5 }}
@@ -411,8 +407,8 @@ function Dashboard() {
                     <LineChart
                       data={
                         selectedValue === "all"
-                          ? [monthlyRevenueData]
-                          : [transformedMonthlyRevenueData]
+                          ? chartDataForAllBranches
+                          : chartDataForBranche
                       }
                       margin={{ top: 5, right: 10, left: -10, bottom: 5 }}
                     >
@@ -491,21 +487,19 @@ function Dashboard() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {selectedValue === "all"
-                      ? allItems
-                      : transformedallItems?.map((item) => (
-                          <TableRow key={item.id}>
-                            <TableCell className="font-medium text-(--primaryFont)">
-                              {item.name}
-                            </TableCell>
-                            <TableCell className="text-center text-(--secondaryFont)">
-                              {item.orders}
-                            </TableCell>
-                            <TableCell className="text-right text-(--secondaryFont)">
-                              SAR {item.revenue.toFixed(2)}
-                            </TableCell>
-                          </TableRow>
-                        ))}
+                    {allItems?.map((item) => (
+                      <TableRow key={item.id}>
+                        <TableCell className="font-medium text-(--primaryFont)">
+                          {item.name}
+                        </TableCell>
+                        <TableCell className="text-center text-(--secondaryFont)">
+                          {item.orders}
+                        </TableCell>
+                        <TableCell className="text-right text-(--secondaryFont)">
+                          SAR {item.revenue}
+                        </TableCell>
+                      </TableRow>
+                    ))}
                   </TableBody>
                 </Table>
               </CardContent>

@@ -7,13 +7,13 @@ import { useDispatch } from "react-redux";
 import { setBranchInfo } from "../store/restaurantSlice";
 
 const Layout = () => {
-  // const { data: branchInfoResponse } = useBranchInfoQuery();
+  const { data: branchInfoResponse } = useBranchInfoQuery();
   const burgerRef = useRef();
   const dispatch = useDispatch();
 
-  // useEffect(() => {
-  //   dispatch(setBranchInfo(branchInfoResponse?.restaurant));
-  // }, [branchInfoResponse]);
+  useEffect(() => {
+    dispatch(setBranchInfo(branchInfoResponse?.restaurant));
+  }, [branchInfoResponse]);
 
   return (
     <>
