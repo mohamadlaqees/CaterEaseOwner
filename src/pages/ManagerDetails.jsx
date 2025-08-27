@@ -79,11 +79,23 @@ const ManagerDetails = () => {
   const handleDeleteManager = async () => {
     try {
       await deleteManager(managerID).unwrap();
-      toast.success("Manager has been deleted successfully.");
+      toast.success("Manager has been deleted successfully.", {
+        style: {
+          background: "white",
+          color: "#314E76",
+          border: "1px solid hsl(var(--border))",
+        },
+      });
       dispatch(openConfirmPopUp(false));
       navigate("/managers");
     } catch (error) {
-      toast.error(error?.data?.message || "Failed to delete manager.");
+      toast.error(error?.data?.message || "Failed to delete manager.", {
+        style: {
+          background: "white",
+          color: "#ef4444",
+          border: "1px solid hsl(var(--border))",
+        },
+      });
     }
   };
 

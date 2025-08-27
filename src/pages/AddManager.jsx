@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router";
 import { toast, Toaster } from "sonner";
-import { User, Mail, Phone, KeyRound } from "lucide-react";
+import { User, Mail, Phone, KeyRound, ShieldCheck } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +18,13 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import LoadingButton from "../components/LoadingButton";
 import { useAddManagerMutation } from "../store/apiSlice/apiSlice";
 import { addManagerSchema } from "../validation/managerValidation"; // Import the new ADD schema
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const AddManager = () => {
   const navigate = useNavigate();
@@ -31,6 +38,7 @@ const AddManager = () => {
       phone: "",
       gender: undefined,
       password: "",
+      status: "",
     },
     mode: "onChange",
   });
@@ -43,7 +51,13 @@ const AddManager = () => {
           ...data,
         },
       }).unwrap();
-      toast.success(response.message || "Manager created successfully!");
+      toast.success(response.message || "Manager created successfully!", {
+        style: {
+          background: "white",
+          color: "#314E76",
+          border: "1px solid hsl(var(--border))",
+        },
+      });
       form.reset(); // Clear the form for the next entry
       navigate("/managers");
     } catch (error) {
@@ -51,7 +65,13 @@ const AddManager = () => {
       const errorMessages = error.data?.errors
         ? Object.values(error.data.errors).flat().join(", ")
         : error.data?.message || "An error occurred.";
-      toast.error(errorMessages);
+      toast.error(errorMessages, {
+        style: {
+          background: "white",
+          color: "#ef4444",
+          border: "1px solid hsl(var(--border))",
+        },
+      });
     }
   };
 
@@ -177,6 +197,36 @@ const AddManager = () => {
                             </FormItem>
                           </RadioGroup>
                         </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="status"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Status</FormLabel>
+                        <div className="relative">
+                          <ShieldCheck className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-(--primaryFont)" />
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            key={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger className="pl-10 focus-visible:ring-(--primary) focus:border-0 placeholder-(--secondaryFont) text-(--secondaryFont)">
+                                <SelectValue placeholder="Select a status" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="text-(--secondaryFont)">
+                              <SelectItem value="active">Active</SelectItem>
+                              <SelectItem value="deleted">
+                                Not Active
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
                         <FormMessage />
                       </FormItem>
                     )}

@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams, useNavigate } from "react-router";
 import { toast, Toaster } from "sonner";
-import { User, Mail, Phone, KeyRound } from "lucide-react";
+import { User, Mail, Phone, KeyRound, ShieldCheck } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -24,7 +24,13 @@ import {
   useManagerDetailsQuery,
 } from "../store/apiSlice/apiSlice";
 import { editManagerSchema } from "../validation/managerValidation"; // Import the new schema
-
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 const EditManager = () => {
   const { managerID } = useParams();
   const navigate = useNavigate();
@@ -42,6 +48,7 @@ const EditManager = () => {
       phone: "",
       gender: undefined,
       password: "",
+      status: "",
     },
     mode: "onChange",
   });
@@ -54,6 +61,7 @@ const EditManager = () => {
         email: response.email,
         phone: String(response.phone),
         gender: response.gender, // 'm' or 'f'
+        status: response.status,
         password: "", // Keep password field empty by default for security
       });
     }
@@ -66,6 +74,7 @@ const EditManager = () => {
       email: data.email,
       phone: data.phone,
       gender: data.gender,
+      status: data.status,
     };
 
     if (data.password) {
@@ -74,10 +83,22 @@ const EditManager = () => {
 
     try {
       const response = await editManager({ managerID, payload }).unwrap();
-      toast.success(response.message || "Manager updated successfully!");
+      toast.success(response.message || "Manager updated successfully!", {
+        style: {
+          background: "white",
+          color: "#314E76",
+          border: "1px solid hsl(var(--border))",
+        },
+      });
       navigate(`/managers/${managerID}`); // Navigate back to details page on success
     } catch (error) {
-      toast.error(error?.data?.message || "An update error occurred.");
+      toast.error(error?.data?.message || "An update error occurred.", {
+        style: {
+          background: "white",
+          color: "#ef4444",
+          border: "1px solid hsl(var(--border))",
+        },
+      });
     }
   };
 
@@ -187,6 +208,34 @@ const EditManager = () => {
                           </FormItem>
                         </RadioGroup>
                       </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="status"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Status</FormLabel>
+                      <div className="relative">
+                        <ShieldCheck className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-(--primaryFont)" />
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          key={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="pl-10 focus-visible:ring-(--primary) focus:border-0 placeholder-(--secondaryFont) text-(--secondaryFont)">
+                              <SelectValue placeholder="Select a status" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="text-(--secondaryFont)">
+                            <SelectItem value="active">Active</SelectItem>
+                            <SelectItem value="deleted">Not Active</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
                       <FormMessage />
                     </FormItem>
                   )}

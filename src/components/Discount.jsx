@@ -58,10 +58,22 @@ const Discount = ({ isOpened, packageID, closeHandler }) => {
   const deleteDiscountHandler = async () => {
     try {
       const response = await deleteDiscount(discountID).unwrap();
-      toast.success(response.message);
+      toast.success(response.message, {
+        style: {
+          background: "white",
+          color: "#314E76",
+          border: "1px solid hsl(var(--border))",
+        },
+      });
       dispatch(openConfirmPopUp(false));
     } catch (error) {
-      toast.error(error.data.message);
+      toast.error(error.data.message, {
+        style: {
+          background: "white",
+          color: "#ef4444",
+          border: "1px solid hsl(var(--border))",
+        },
+      });
     }
   };
 

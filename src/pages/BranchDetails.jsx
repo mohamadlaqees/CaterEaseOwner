@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { ChevronRight, User, Phone, Home, Mail, Calendar } from "lucide-react";
 import BranchDetailsSkeleton from "../components/skeleton/BranchDetailsSkeleton";
 import TableComponent from "../components/TableComponent"; // Ensure this path is correct
+import { useEffect } from "react";
 
 // A small helper component for displaying info items
 const InfoItem = ({ icon, label, value }) => (
@@ -44,7 +45,11 @@ const deliveryAreasHeader = [
 
 const BranchDetails = () => {
   const { branchID } = useParams();
-  const { data, error, isLoading } = useBranchDetailsQuery(branchID);
+  const { data, error, isLoading, refetch } = useBranchDetailsQuery(branchID);
+
+  useEffect(() => {
+    refetch();
+  }, []);
 
   if (error) {
     return (

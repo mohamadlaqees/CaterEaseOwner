@@ -217,16 +217,26 @@ export const apiSlice = createApi({
       query: (date) => `users/all/Manager??date=${date}`,
     }),
 
+    //Reports
     reports: build.query({
       query: () => `owner/report`,
     }),
     changeReportsStatus: build.mutation({
-      query: ({ reviewID, status }) => ({
-        url: `owner/report/update/${reviewID}`,
+      query: ({ reportID, status }) => ({
+        url: `report/update/${reportID}`,
         method: "POST",
         body: {
           status,
         },
+      }),
+    }),
+    filterReportByDate: build.query({
+      query: (reportDate) => `owner/report??date=${reportDate}`,
+    }),
+    deleteReport: build.mutation({
+      query: (reportID) => ({
+        url: `complaints/${reportID}`,
+        method: "DELETE",
       }),
     }),
   }),
@@ -264,6 +274,8 @@ export const {
   useReportsQuery,
   useChangeReportsStatusMutation,
   useGetDeliveryRegionsQuery,
+  useFilterReportByDateQuery,
+  useDeleteReportMutation,
   // useCustomersQuery,
   // useReportMutation,
   // usePopularThisWeekQuery,

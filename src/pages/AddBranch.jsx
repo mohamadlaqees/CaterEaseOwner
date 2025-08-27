@@ -525,7 +525,7 @@ const AddBranch = () => {
                 type="button"
                 variant="outline"
                 onClick={() => {
-                  form.reset();
+                  navigate("/branches");
                 }}
                 className="text-(--secondaryFont) hover:text-(--primary) cursor-pointer "
               >
