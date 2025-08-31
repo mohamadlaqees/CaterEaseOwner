@@ -12,6 +12,7 @@ const HeaderBar = ({ sidebarRef }) => {
   const [logOut, { isLoading, error }] = useLogOutMutation();
   const dispatch = useDispatch();
   const { sidebarOpened } = useSelector((state) => state.sidebar);
+  const { unreadCount } = useSelector((state) => state.notification);
   const { branchInfo } = useSelector((state) => state.restaurant);
   const [dropMenu, setDropMenu] = useState(false);
   const [notifications, setNotifications] = useState(false);
@@ -101,12 +102,14 @@ const HeaderBar = ({ sidebarRef }) => {
                 size={30}
               />
 
-              <span className="absolute w-4 cursor-pointer text-xs text-center h-4 text-white  rounded-full bg-(--primary) top-0 right-0">
-                2
-              </span>
+              {unreadCount !== 0 && (
+                <span className="absolute w-4 cursor-pointer text-xs text-center h-4 text-white  rounded-full bg-(--primary) top-0 right-0">
+                  {unreadCount}
+                </span>
+              )}
             </div>
             <Notifications
-              notifications={notifications}
+              isOpen={notifications}
               notificationsRef={notification}
             />
           </div>
