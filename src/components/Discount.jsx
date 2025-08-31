@@ -3,7 +3,7 @@ import {
   useDeleteDiscountMutation,
   usePackagesWithDiscountQuery,
 } from "../store/apiSlice/apiSlice";
-import { PlusCircle, X } from "lucide-react";
+import { Eye, PlusCircle, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import AddDiscount from "./AddDiscount";
@@ -20,34 +20,41 @@ const Discount = ({ isOpened, packageID, closeHandler }) => {
   const [discountID, setDiscountID] = useState(null);
   const [viewOnly, setViewOnly] = useState(false);
   const { confirmPopUpOpened } = useSelector((state) => state.menu);
-
-  const { data: packagesWithDiscount, refetch } =
-    usePackagesWithDiscountQuery();
+  console.log(discountData);
+  const {
+    data: packagesWithDiscount,
+    refetch,
+    isFetching,
+  } = usePackagesWithDiscountQuery(packageID);
   const [deleteDiscount, { isLoading: deleteDiscountIsLoading }] =
     useDeleteDiscountMutation();
 
-  const packagesDiscounts = packagesWithDiscount?.packages.find(
-    (pkg) => pkg.id === +packageID
-  )?.discounts;
+  console.log(packagesWithDiscount);
+
+  const packagesDiscounts = packagesWithDiscount?.filter(
+    (pkg) => pkg.package_id === +packageID
+  );
 
   const cancelPopUpHandler = () => {
     dispatch(openConfirmPopUp(false));
   };
 
   const handleShowAddDiscount = () => {
+    setDiscountData(null);
     setViewOnly(false);
     setIsAddDiscountModalOpen(true);
   };
 
   const handleCloseAddDisocunt = () => {
     setIsAddDiscountModalOpen(false);
+    setDiscountData(null);
   };
 
   const handleShowDiscount = (discountID) => {
-    setViewOnly(true);
-    setIsAddDiscountModalOpen(true);
     const filteredDiscount = packagesDiscounts.find((d) => d.id === discountID);
     setDiscountData(filteredDiscount);
+    setViewOnly(true);
+    setIsAddDiscountModalOpen(true);
   };
 
   const handleDeleteDiscount = (discountId) => {
@@ -103,14 +110,24 @@ const Discount = ({ isOpened, packageID, closeHandler }) => {
     },
   ];
 
-  const tableBody = packagesDiscounts?.map((discount) => ({
-    id: discount.id,
-    value: `${discount.value}`,
-    description: discount.description,
-    start_at: format(discount.start_at, "yyyy-MM-dd"),
-    end_at: format(discount.end_at, "yyyy-MM-dd"),
-    is_active: discount.is_active ? "Active" : "Inactive",
-  }));
+  const tableBody = packagesDiscounts?.map((discount) => {
+    // Format dates safely for each discount in the array
+    const validStartDate = discount.start_at
+      ? format(new Date(discount.start_at), "yyyy-MM-dd")
+      : "";
+    const validEndDate = discount.end_at
+      ? format(new Date(discount.end_at), "yyyy-MM-dd")
+      : "";
+
+    return {
+      id: discount.id,
+      value: `${discount.value}%`, // It's good practice to add the % sign here
+      description: discount.description,
+      start_at: validStartDate,
+      end_at: validEndDate,
+      is_active: discount.is_active ? "Active" : "Inactive",
+    };
+  });
 
   useEffect(() => {
     refetch();
@@ -122,6 +139,16 @@ const Discount = ({ isOpened, packageID, closeHandler }) => {
 
   return (
     <>
+      {isAddDiscountModalOpen && (
+        <AddDiscount
+          key={discountData ? discountData.id : "new"}
+          isOpened={isAddDiscountModalOpen}
+          closeHandler={handleCloseAddDisocunt}
+          initialData={discountData}
+          viewOnly={viewOnly}
+          packageID={+packageID}
+        />
+      )}
       {confirmPopUpOpened && (
         <ConfirmPopUp
           loading={deleteDiscountIsLoading}
@@ -130,15 +157,7 @@ const Discount = ({ isOpened, packageID, closeHandler }) => {
           content={"Are you sure you want to delete this Discount?"}
         />
       )}
-      {isAddDiscountModalOpen && (
-        <AddDiscount
-          isOpen={isAddDiscountModalOpen}
-          closeHandler={handleCloseAddDisocunt}
-          initialData={discountData}
-          viewOnly={viewOnly}
-          packageID={+packageID}
-        />
-      )}
+
       <div
         className="fixed inset-0 w-full h-full bg-black opacity-30 z-20"
         onClick={closeHandler}
@@ -167,6 +186,7 @@ const Discount = ({ isOpened, packageID, closeHandler }) => {
           tableClass={"text-(--primaryFont)"}
           tableBody={tableBody}
           tableHeader={tableHeader}
+          isLoading={isFetching}
         />
       </div>
     </>

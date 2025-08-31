@@ -150,7 +150,7 @@ export const apiSlice = createApi({
       invalidatesTags: ["packages"],
     }),
     packagesWithDiscount: build.query({
-      query: () => `package-discounts/management`,
+      query: (packageID) => `owner/Discount_TO_package/${packageID}`,
       providesTags: ["discount"],
     }),
     addDiscount: build.mutation({
@@ -235,7 +235,7 @@ export const apiSlice = createApi({
     }),
     deleteReport: build.mutation({
       query: (reportID) => ({
-        url: `complaints/${reportID}`,
+        url: `report/delete/${reportID}`,
         method: "DELETE",
       }),
     }),

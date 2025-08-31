@@ -1,4 +1,4 @@
-import React from "react"; // Import React for useMemo
+import React, { useEffect } from "react"; // Import React for useMemo
 import {
   ChevronRight,
   Tag,
@@ -18,7 +18,11 @@ import { FoodDetailsSkeleton } from "../components/skeleton/FoodDetailsSkeleton"
 
 const FoodDetails = () => {
   const { food, category, branchID, categoryID } = useParams();
-  const { data: packageResponse, isLoading } = useShowPackaegQuery(food);
+  const {
+    data: packageResponse,
+    isLoading,
+    refetch,
+  } = useShowPackaegQuery(food);
 
   const calculateDiscountedPrice = (basePrice, discounts) => {
     if (!basePrice || !discounts || discounts.length === 0) {
@@ -92,6 +96,9 @@ const FoodDetails = () => {
   } = packageDetails;
 
   const categoryNames = categories?.map((ctg) => ctg.name);
+  useEffect(() => {
+    refetch();
+  }, []);
 
   if (isLoading) {
     return <FoodDetailsSkeleton />;
