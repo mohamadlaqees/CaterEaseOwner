@@ -202,9 +202,9 @@ const BranchDetails = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {branch?.photo ? (
+                    {branch?.restaurant.photo ? (
                       <img
-                        src={branch?.photo}
+                        src={branch?.restaurant?.photo}
                         alt={branch?.description}
                         className="w-full h-auto rounded-md object-cover border"
                       />

@@ -20,6 +20,8 @@ import AddManager from "./pages/AddManager.jsx";
 import ManagerDetails from "./pages/ManagerDetails.jsx";
 import EditManager from "./pages/EditManager.jsx";
 import ReportsPage from "./pages/Reports.jsx";
+import NotFoundPage from "./pages/Not-found.jsx";
+import ErrorPage from "./pages/ErrorPage.jsx";
 
 const routes = createBrowserRouter([
   {
@@ -33,6 +35,7 @@ const routes = createBrowserRouter([
         <Layout />
       </ProtectRoute>
     ),
+
     children: [
       {
         index: true,
@@ -107,6 +110,10 @@ const routes = createBrowserRouter([
         element: <ReportsPage />,
       },
     ],
+  },
+  {
+    path: "*",
+    element: <NotFoundPage />,
   },
 ]);
 
