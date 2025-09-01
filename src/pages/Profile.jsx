@@ -50,11 +50,9 @@ const Profile = () => {
   // Safely access nested data with optional chaining
   const basicInfo = branchInfo?.basic_info;
   const branches = branchInfo?.branches;
-  const mainBranch = branches?.[0]?.branch_info;
 
   // Process data with fallbacks
-  const restaurantPhoto =
-    mainBranch?.photo?.replace(/\\\//g, "/") || "./default-restaurant.png";
+  const restaurantPhoto = basicInfo?.photo;
   const coverPhoto = "./profile.png"; // Placeholder for a dynamic cover photo
 
   const tableBody =
