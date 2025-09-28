@@ -50,13 +50,7 @@ CaterEase Owner is a comprehensive web application designed for restaurant and c
    yarn start
    ```
 
-## Contributing
 
-Contributions are welcome! Please fork the repo and submit a pull request.
-
-## License
-
-[Specify your license here, e.g., MIT]
 
 ---
 
